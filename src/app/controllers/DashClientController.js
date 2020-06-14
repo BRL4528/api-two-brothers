@@ -1,38 +1,46 @@
 import DashClient from '../schemas/DashClient';
 import File from '../schemas/File';
 
-class ContactController {
+class DashClientController {
   async index(req, res) {
-    const contacts = await DashClient.find();
+    try {
+      const contacts = await DashClient.find();
 
-    return res.json(contacts);
+      return res.json(contacts);
+    } catch (error) {
+      return res.status(500).send('Error fetching banners' + error);
+    }
   }
 
   async store(req, res) {
-    const { id, opacity, displayLogo } = req.body;
+    try {
+      const { id, opacity, displayLogo } = req.body;
 
-    const files = await File.find();
-    const dashClient = await DashClient.find();
+      const files = await File.find();
+      const dashClient = await DashClient.find();
 
-    const file = id.map((item) => files.find((archive) => archive.id === item));
+      const file = id.map((item) => files.find((archive) => archive.id === item));
 
-    if (dashClient.length === 0) {
-      const listBanner = await DashClient.create({
+      if (dashClient.length === 0) {
+        const listBanner = await DashClient.create({
+          file,
+          opacity,
+          displayLogo,
+        });
+
+        return res.json(listBanner);
+      }
+      const listBanner = await DashClient.updateOne({
         file,
         opacity,
         displayLogo,
       });
 
       return res.json(listBanner);
+    } catch (error) {
+      return res.status(500).send('Error adding banners' + error);
     }
-    const listBanner = await DashClient.updateOne({
-      file,
-      opacity,
-      displayLogo,
-    });
-
-    return res.json(listBanner);
   }
 }
 
-export default new ContactController();
+export default new DashClientController();

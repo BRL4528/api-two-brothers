@@ -6,6 +6,7 @@ import User from '../schemas/User';
 
 class SessionController {
   async store(req, res) {
+   try {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
@@ -26,6 +27,9 @@ class SessionController {
         expiresIn: authConfig.expiresIn,
       }),
     });
+   } catch(error) {
+     return res.status(500).send('Error authenticating' + error);
+   }
   }
 }
 

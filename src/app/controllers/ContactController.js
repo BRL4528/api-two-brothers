@@ -3,44 +3,56 @@ import User from '../schemas/User';
 
 class ContactController {
   async index(req, res) {
-    const isUser = await User.findOne({ _id: req.userId });
+    try {
+      const isUser = await User.findOne({ _id: req.userId });
 
-    if (!isUser) {
-      return res.status(400).json({ error: 'User not exists' });
+      if (!isUser) {
+        return res.status(400).json({ error: 'User not exists' });
+      }
+
+      const contacts = await Contact.find();
+
+      return res.json(contacts);
+    } catch (error) {
+      return res.status(500).send('Error fetching contacts' + error);
     }
-
-    const contacts = await Contact.find();
-
-    return res.json(contacts);
   }
 
   async store(req, res) {
-    const { name, email, cel, tel, message } = req.body;
+    try {
+      const { name, email, cel, tel, message } = req.body;
 
-    const contact = await Contact.create({
-      name,
-      email,
-      cel,
-      tel,
-      message,
-    });
+      const contact = await Contact.create({
+        name,
+        email,
+        cel,
+        tel,
+        message,
+      });
 
-    return res.json(contact);
+      return res.json(contact);
+    } catch (error) {
+      return res.status(500).send('Error adding contact' + error);
+    }
   }
 
   async update(req, res) {
-    const { _id } = req.params;
+    try {
+      const { _id } = req.params;
 
-    const isUser = await User.findOne({ _id: req.userId });
+      const isUser = await User.findOne({ _id: req.userId });
 
-    if (!isUser) {
-      return res.status(400).json({ error: 'User not exists' });
+      if (!isUser) {
+        return res.status(400).json({ error: 'User not exists' });
+      }
+
+      const contact = await Contact.findByIdAndUpdate(_id, {
+        read: true,
+      });
+      return res.json(contact);
+    } catch (error) {
+      return res.status(500).send('Error editing read contact' + error);
     }
-
-    const contact = await Contact.findByIdAndUpdate(_id, {
-      read: true,
-    });
-    return res.json(contact);
   }
 }
 

@@ -3,12 +3,17 @@ import User from '../schemas/User';
 
 class UserController {
   async index(req, res) {
-    const users = await User.find();
+    try {
+      const users = await User.find();
 
-    return res.json(users);
+      return res.json(users);
+    } catch(error) {
+     return res.status(500).send("Error fetching user!" + error);
+    }
   }
 
   async store(req, res) {
+   try {
     const { name, email, password, about } = req.body;
 
     const userExists = await User.findOne({ email });
@@ -25,10 +30,14 @@ class UserController {
     });
 
     return res.json(userCreated);
+   } catch(error) {
+    return res.status(500).send("Error inserting new user: " + error);
+   }
   }
 
   async update(req, res) {
-    const { about } = req.body;
+    try {
+      const { about } = req.body;
 
     const userExists = await User.findOne({ _id: req.userId });
 
@@ -41,6 +50,9 @@ class UserController {
     });
 
     return res.json(userExists);
+    } catch(error) {
+      return res.status(500).send("Error editing user!" + error);
+    }
   }
 }
 
