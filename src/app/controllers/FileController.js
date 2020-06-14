@@ -18,7 +18,7 @@ class FileController {
       const file = await File.create({
         name,
         path,
-        url: `${process.env.APP_URL}/files/${path}`,
+        url: `${process.env.APP_URL}files/${path}`,
       });
 
       return res.json(file);
